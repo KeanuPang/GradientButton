@@ -9,8 +9,8 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private lazy var button: DrawOnButton = {
-        let button = DrawOnButton()
+    private lazy var button: GradientButton = {
+        let button = GradientButton()
         button.frame = CGRect(x: 0, y: 0, width: 80, height: 120)
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor(hex: "D6D7CC").cgColor
@@ -25,7 +25,9 @@ class ViewController: UIViewController {
     }
 }
 
-class DrawOnButton: UIButton {
+class GradientButton: UIButton {
+    var upsideDown: Bool = true
+
     override func layoutSubviews() {
         _ = layer.sublayers?.filter {
             $0.name == "gradientLayer" || $0.name == "linesLayer"
@@ -39,15 +41,21 @@ class DrawOnButton: UIButton {
         let gradientLayer = CAGradientLayer()
         gradientLayer.name = "gradientLayer"
         gradientLayer.frame = self.bounds
-        gradientLayer.colors = [
+        gradientLayer.colors = self.getColorScheme()
+        gradientLayer.locations = [0.0, 0.25, 0.5, 0.75, 1.0]
+        self.layer.addSublayer(gradientLayer)
+    }
+
+    private func getColorScheme() -> [CGColor] {
+        let colorScheme = [
             UIColor(hex: "CF5953").cgColor,
             UIColor(hex: "F3CA51").cgColor,
             UIColor(hex: "F1CB4F").cgColor,
             UIColor(hex: "CEC852").cgColor,
             UIColor(hex: "6BA55A").cgColor,
         ]
-        gradientLayer.locations = [0.0, 0.25, 0.5, 0.75, 1.0]
-        self.layer.addSublayer(gradientLayer)
+
+        return self.upsideDown ? colorScheme.reversed() : colorScheme
     }
 
     private func drawLines() {
